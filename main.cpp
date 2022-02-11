@@ -292,8 +292,28 @@ void printItem(const Item& item)
 int attack(const Object& object)
 {
     int potentialDamage{ object.strength };
+
     // TODO: attack()
     // TODO: check for a sword. IF they have it, add to potential damage!
+
+//    // Method 1:
+//    for( auto item : object.inventory )
+//        if( item.first == Item::Type::sword )
+//            potentialDamage += item.second.bonusValue;
+
+//    // Method 2:
+//    if( auto inventoryIterator{ object.inventory.begin() }; inventoryIterator != object.inventory.end() )
+//        if( inventoryIterator->first == Item::Type::sword )
+//            potentialDamage += inventoryIterator->second.bonusValue;
+
+//    // Method 3:
+//    if( auto inventoryIterator{ std::find( object.inventory.begin(), object.inventory.end(), Item::Type::sword ) }; inventoryIterator != object.inventory.end() )
+//        potentialDamage += inventoryIterator->second.bonusValue;
+
+    // Method 4:
+    if( auto inventoryIterator{ object.inventory.find( Item::Type::sword ) }; inventoryIterator != object.inventory.end() )
+        potentialDamage += inventoryIterator->second.bonusValue;
+
     std::normal_distribution<double> damageDealt(potentialDamage, 2.0);
 
     printName(object);
