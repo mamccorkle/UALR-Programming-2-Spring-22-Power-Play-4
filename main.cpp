@@ -17,6 +17,7 @@
 #include <fstream>
 #include <map>
 
+// TODO: Structs
 struct Item
 {
     enum class Type { sword, armor, shield, numTypes };
@@ -34,8 +35,6 @@ struct Object
     std::map<Item::Type, Item> inventory;
 };
 
-
-
 std::vector<Object> createMonsters(const Object& player );
 void monsterAttack(Object& player, const std::vector<Object>& monsters);
 void bringOutYourDead(std::vector<Object>& monsters);
@@ -51,8 +50,6 @@ void printName(const Object& object);
 void printItem(const Item & item);
 int attack(const Object& object);
 void defend(Object& object, int damage);
-
-
 
 std::random_device seed;
 std::default_random_engine engine(seed());
@@ -116,6 +113,7 @@ int main()
     }
     system("PAUSE");
 
+    return 0;
 }
 
 
@@ -223,30 +221,60 @@ void playerAttack(const Object& player, std::vector<Object>& monsters)
 
 void levelUp(Object& player)
 {
+    // TODO: levelUp()
 
-    /*
-        1.  Increment player's level
-        2.  randomly at health to player using randomHealth distribution (at least 1)
-        3.  same for strength, but randomStrength distribution.
-        4. create distributions for random item
-            a. unifrom 0-Item::Type::numTypes-1 for type
-            b. normal player.level, player.level/3 for bonusValue.
-        5. create new item with random values.
-        6. cout the information about the item.
-        7. use find to see if you have that type of item.
-            a. if you don't, assign it.
-            b. if you do, check bonus value. Keep if new item bigger.
-    */
+    // TODO:    1.  Increment player's level
+    player.level++;
+
+    // TODO:    2.  randomly add health to player using randomHealth distribution (at least 1)
     std::normal_distribution<double> randomHealth(20.0 + player.level * 5, 5.0);
+    player.health += std::max( 1, static_cast<int>( randomHealth( engine ) ) );
+
+    // TODO:    3.  same for strength, but randomStrength distribution.
     std::normal_distribution<double> randomStrength(3.0 + player.level, 1.0);
+    player.strength += std::max( 1, static_cast<int>( randomStrength( engine ) ) );
+
+    // TODO:    4. create distributions for random item
+    // TODO:        a. unifrom 0-Item::Type::numTypes-1 for type
+    std::uniform_int_distribution<int> randomItemType( 0, static_cast<int>( Item::Type::numTypes ) - 1 );
+
+    // TODO:        b. normal player.level, player.level/3 for bonusValue.
+    std::normal_distribution<double> randomItemBonusValue( static_cast<float>( player.level ),
+                                                           static_cast<float>( player.level ) / 3.0 );
+
+    // TODO:    5. create new item with random values.
+    Item newItem{ static_cast<Item::Type>( randomItemType( engine) ),
+                  static_cast<int>( randomItemBonusValue( engine ) ) };
+
+    // TODO:    6. cout the information about the item.
+    std::cout << "Player has found a new " << '\n';
+    printItem( newItem );
+
+    // TODO:    7. use find to see if you have that type of item.
+    // TODO:        a. if you don't, assign it.
+    if( auto inventoryIterator{ player.inventory.find( newItem.clasification ) }; inventoryIterator != player.inventory.end() )
+    {
+        player.inventory.insert( { static_cast<Item::Type>( newItem.clasification ), newItem } );
+    }
+    // TODO:        b. if you do, check bonus value. Keep if new item bigger.
+    else if( auto inventoryIterator{ object.inventory.find( Item::Type::shield ) }; inventoryIterator != object.inventory.end() )
+        bonusValue += inventoryIterator->second.bonusValue;
+    std::cout << "Player has added a new " << '\n';
+    std::cout << "Player has kept the better " << '\n';
+    std::cout << "" << '\n';
 
 }
 
 int calculateAC(const Object& object)
 {
-    // TODO: calculateAC
-    // TODO: check for armor and shield
-    // TODO: return to the combined bonus values.
+    int bonusValue{ 0 };
+    // Check for armor and/or shield
+    if( auto inventoryIterator{ object.inventory.find( Item::Type::armor ) }; inventoryIterator != object.inventory.end() )
+        bonusValue += inventoryIterator->second.bonusValue;
+    else if( auto inventoryIterator{ object.inventory.find( Item::Type::shield ) }; inventoryIterator != object.inventory.end() )
+        bonusValue += inventoryIterator->second.bonusValue;
+    // Return to the combined bonus values.
+    return bonusValue;
 }
 
 void printName(const Object& object)
@@ -292,25 +320,7 @@ void printItem(const Item& item)
 int attack(const Object& object)
 {
     int potentialDamage{ object.strength };
-
-    // TODO: attack()
-    // TODO: check for a sword. IF they have it, add to potential damage!
-
-//    // Method 1:
-//    for( auto item : object.inventory )
-//        if( item.first == Item::Type::sword )
-//            potentialDamage += item.second.bonusValue;
-
-//    // Method 2:
-//    if( auto inventoryIterator{ object.inventory.begin() }; inventoryIterator != object.inventory.end() )
-//        if( inventoryIterator->first == Item::Type::sword )
-//            potentialDamage += inventoryIterator->second.bonusValue;
-
-//    // Method 3:
-//    if( auto inventoryIterator{ std::find( object.inventory.begin(), object.inventory.end(), Item::Type::sword ) }; inventoryIterator != object.inventory.end() )
-//        potentialDamage += inventoryIterator->second.bonusValue;
-
-    // Method 4:
+    // Check for a sword. IF they have it, add to potential damage!
     if( auto inventoryIterator{ object.inventory.find( Item::Type::sword ) }; inventoryIterator != object.inventory.end() )
         potentialDamage += inventoryIterator->second.bonusValue;
 
