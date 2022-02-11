@@ -244,8 +244,9 @@ void levelUp(Object& player)
 
 int calculateAC(const Object& object)
 {
-    //check for armor and shield
-    //return to the combined bonus values.
+    // TODO: calculateAC
+    // TODO: check for armor and shield
+    // TODO: return to the combined bonus values.
 }
 
 void printName(const Object& object)
@@ -291,7 +292,8 @@ void printItem(const Item& item)
 int attack(const Object& object)
 {
     int potentialDamage{ object.strength };
-    //check for a sword. IF they have it, add to potential damage!
+    // TODO: attack()
+    // TODO: check for a sword. IF they have it, add to potential damage!
     std::normal_distribution<double> damageDealt(potentialDamage, 2.0);
 
     printName(object);
