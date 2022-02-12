@@ -127,7 +127,7 @@ void displayBattle(const Object& player, const std::vector<Object>& monsters)
         std::cout << std::endl;
     }
     std::cout << std::endl << "  Monsters: " << std::endl;
-    for (int i{ 0 }; i < monsters.size(); i++)
+    for (int i{ 0 }; i < static_cast<int>( monsters.size() ); i++)
     {
         std::cout << "   " << i + 1 << ". ";
         printName(monsters[i]);
@@ -215,7 +215,7 @@ void playerAttack(const Object& player, std::vector<Object>& monsters)
     std::cout << "Which Monster: ";
     int monsterNum{ 0 };
     std::cin >> monsterNum;
-    if (monsterNum > 0 && monsterNum <= monsters.size())
+    if (monsterNum > 0 && monsterNum <= static_cast<int>( monsters.size()) )
     {
         defend(monsters[monsterNum - 1], attack(player));
     }
