@@ -263,7 +263,7 @@ void levelUp(Object& player)
             inventoryIterator->second.bonusValue = newItem.bonusValue;
             std::cout << "Player has added the new ";
             printItem( newItem );
-            std::cout << "to their inventory\n";
+            std::cout << " to their inventory\n";
         }
         else
         {
@@ -279,7 +279,7 @@ void levelUp(Object& player)
         player.inventory.insert( { static_cast<Item::Type>( newItem.clasification ), newItem } );
         std::cout << "Player has added the new ";
         printItem( newItem );
-        std::cout << "to their inventory\n";
+        std::cout << " to their inventory\n";
     }
 
 }
