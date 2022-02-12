@@ -14,10 +14,8 @@
 #include <vector>
 #include <random>
 #include <algorithm>
-#include <fstream>
 #include <map>
 
-// TODO: Structs
 struct Item
 {
     enum class Type { sword, armor, shield, numTypes };
@@ -172,6 +170,10 @@ std::vector<Object> createMonsters(const Object& player)
                 strengthVariance = level * 6;
                 healthVariance = level * level * 3;
                 break;
+            case Object::Type::numTypes:
+                break;
+            case Object::Type::player:
+                break;
         }
         std::normal_distribution<double> randomStrength(strengthVariance, level / 4.0);
         std::normal_distribution<double> randomHealth(healthVariance*5, level / 2.0);
@@ -221,8 +223,6 @@ void playerAttack(const Object& player, std::vector<Object>& monsters)
 
 void levelUp(Object& player)
 {
-    // TODO: levelUp()
-
     // 1.  Increment player's level
     player.level++;
 
@@ -242,29 +242,23 @@ void levelUp(Object& player)
     std::normal_distribution<double> randomItemBonusValue( static_cast<float>( player.level ),
                                                            static_cast<float>( player.level ) / 3.0 );
 
-    // 5. create new item with random values.
+    // 5. create the newItem object with random values.
     Item newItem{ static_cast<Item::Type>( randomItemType( engine) ),
-                  static_cast<int>( randomItemBonusValue( engine ) ) };
+                  std::max( 1, static_cast<int>( randomItemBonusValue( engine ) ) ) };
 
-    // TODO:    6. cout the information about the item.
+    // 6. cout the information about the item.
     std::cout << "Player has found a new ";
     printItem( newItem );
     std::cout << '\n';
 
-    // TODO:    7. use find to see if you have that type of item.
-    // TODO:        a. if you don't, assign it.
+    // 7. use find to see if you have that type of item.
+    //     a. if you do, check bonus value. Keep if new item bigger.
     if( auto inventoryIterator{ player.inventory.find( newItem.clasification ) }; inventoryIterator != player.inventory.end() )
     {
-        player.inventory.insert( { static_cast<Item::Type>( newItem.clasification ), newItem } );
-        std::cout << "Player has added the new ";
-        printItem( newItem );
-        std::cout << "to their inventory\n";
-    }
-    // TODO:        b. if you do, check bonus value. Keep if new item bigger.
-    else
-    {
+        // Item exists within inventory:
+
         // If the bonus value of the current inventory item is less than the new item, keep the higher value:
-        if( inventoryIterator->second.bonusValue < newItem.bonusValue )
+        if( newItem.bonusValue > inventoryIterator->second.bonusValue )
         {
             inventoryIterator->second.bonusValue = newItem.bonusValue;
             std::cout << "Player has added the new ";
@@ -277,6 +271,15 @@ void levelUp(Object& player)
             printItem(newItem);
             std::cout << " is not any good!\n";
         }
+
+    }
+    //     b. if you don't, assign it.
+    else
+    {
+        player.inventory.insert( { static_cast<Item::Type>( newItem.clasification ), newItem } );
+        std::cout << "Player has added the new ";
+        printItem( newItem );
+        std::cout << "to their inventory\n";
     }
 
 }
@@ -313,6 +316,8 @@ void printName(const Object& object)
         case Object::Type::dragon:
             std::cout << "Dragon";
             break;
+        case Object::Type::numTypes:
+            break;
     }
 }
 
@@ -328,6 +333,8 @@ void printItem(const Item& item)
             break;
         case Item::Type::sword:
             std::cout << "Sword";
+            break;
+        case Item::Type::numTypes:
             break;
     }
     std::cout << "+" << item.bonusValue;
