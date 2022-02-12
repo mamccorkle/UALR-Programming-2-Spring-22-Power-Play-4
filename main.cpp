@@ -223,45 +223,61 @@ void levelUp(Object& player)
 {
     // TODO: levelUp()
 
-    // TODO:    1.  Increment player's level
+    // 1.  Increment player's level
     player.level++;
 
-    // TODO:    2.  randomly add health to player using randomHealth distribution (at least 1)
+    // 2.  randomly add health to player using randomHealth distribution (at least 1)
     std::normal_distribution<double> randomHealth(20.0 + player.level * 5, 5.0);
     player.health += std::max( 1, static_cast<int>( randomHealth( engine ) ) );
 
-    // TODO:    3.  same for strength, but randomStrength distribution.
+    // 3.  same for strength, but randomStrength distribution.
     std::normal_distribution<double> randomStrength(3.0 + player.level, 1.0);
     player.strength += std::max( 1, static_cast<int>( randomStrength( engine ) ) );
 
-    // TODO:    4. create distributions for random item
-    // TODO:        a. unifrom 0-Item::Type::numTypes-1 for type
+    // 4. create distributions for random item
+    //    a. unifrom 0-Item::Type::numTypes-1 for type
     std::uniform_int_distribution<int> randomItemType( 0, static_cast<int>( Item::Type::numTypes ) - 1 );
 
-    // TODO:        b. normal player.level, player.level/3 for bonusValue.
+    //    b. normal player.level, player.level/3 for bonusValue.
     std::normal_distribution<double> randomItemBonusValue( static_cast<float>( player.level ),
                                                            static_cast<float>( player.level ) / 3.0 );
 
-    // TODO:    5. create new item with random values.
+    // 5. create new item with random values.
     Item newItem{ static_cast<Item::Type>( randomItemType( engine) ),
                   static_cast<int>( randomItemBonusValue( engine ) ) };
 
     // TODO:    6. cout the information about the item.
-    std::cout << "Player has found a new " << '\n';
+    std::cout << "Player has found a new ";
     printItem( newItem );
+    std::cout << '\n';
 
     // TODO:    7. use find to see if you have that type of item.
     // TODO:        a. if you don't, assign it.
     if( auto inventoryIterator{ player.inventory.find( newItem.clasification ) }; inventoryIterator != player.inventory.end() )
     {
         player.inventory.insert( { static_cast<Item::Type>( newItem.clasification ), newItem } );
+        std::cout << "Player has added the new ";
+        printItem( newItem );
+        std::cout << "to their inventory\n";
     }
     // TODO:        b. if you do, check bonus value. Keep if new item bigger.
-    else if( auto inventoryIterator{ object.inventory.find( Item::Type::shield ) }; inventoryIterator != object.inventory.end() )
-        bonusValue += inventoryIterator->second.bonusValue;
-    std::cout << "Player has added a new " << '\n';
-    std::cout << "Player has kept the better " << '\n';
-    std::cout << "" << '\n';
+    else
+    {
+        // If the bonus value of the current inventory item is less than the new item, keep the higher value:
+        if( inventoryIterator->second.bonusValue < newItem.bonusValue )
+        {
+            inventoryIterator->second.bonusValue = newItem.bonusValue;
+            std::cout << "Player has added the new ";
+            printItem( newItem );
+            std::cout << "to their inventory\n";
+        }
+        else
+        {
+            std::cout << "This ";
+            printItem(newItem);
+            std::cout << " is not any good!\n";
+        }
+    }
 
 }
 
